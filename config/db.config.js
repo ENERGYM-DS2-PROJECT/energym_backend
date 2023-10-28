@@ -15,7 +15,7 @@
 const Pool = require("pg").Pool;
 require('dotenv').config();
 
-const devConfig = {
+const DB_CONFIG = {
   user: process.env.DB_USERNAME,
   host: process.env.DB_HOST,
   password: process.env.DB_PASSWORD,
@@ -29,8 +29,9 @@ const devConfig = {
 
 const proConfig =  process.env.DATABASE_URL;
 
-const pool = new Pool({
-  connectionString: process.env.NODE === "production" ? proConfig : devConfig
-});
+// const pool = new Pool({
+//   connectionString: process.env.NODE === "production" ? proConfig : devConfig
+// });
 
-module.exports = pool;
+// module.exports = pool;
+module.exports = {DB_CONFIG}

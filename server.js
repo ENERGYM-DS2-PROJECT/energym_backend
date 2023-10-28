@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
-const PORT = process.env.PORT || 5000;
 const { Sequelize } = require('sequelize');
 const app = express();
 
@@ -78,6 +77,7 @@ require("./routes/exercise.routes")(app);
 require("./routes/set.routes")(app);
 require("./routes/instructor.routes")(app);
 require("./routes/home.routes")(app);
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
