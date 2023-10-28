@@ -74,4 +74,5 @@ jobs:
             docker pull '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com/energym:${IMAGE_TAG}'
             docker stop energym-backend
             docker rm energym-backend
-            docker run -d -p 8080:8181 --name energym-backend -i -t '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com/energym:${IMAGE_TAG}'
+            docker run -d -p 8001:8008 --name energym-backend -i -t '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com/energym:${IMAGE_TAG}'
+          '
