@@ -141,10 +141,14 @@ exports.deleteAllUsers = (req, res) => {
 exports.findAllClient = (req, res) => {
   
   User.findAll({
-     where: { 
-      role_id: 
-      { [Op.eq]: 1 } 
-    }
+      include: [
+        {
+          model: Role,
+          where: {
+            name: 'user'
+          }
+        }
+      ]
     })
     .then(data => {
       res.send(data);
@@ -159,8 +163,12 @@ exports.findAllClient = (req, res) => {
 exports.findAllInstructor = (req, res) => {
   User.findAll({
     where: { 
-     role_id: 
-     { [Op.eq]: 2 } 
+     include: {
+      model: Role,
+      where: {
+        name: 'instructor'
+      }
+    }
    }
    })
    .then(data => {

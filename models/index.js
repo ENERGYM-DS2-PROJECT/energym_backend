@@ -1,4 +1,4 @@
-const dbConfig = require("../config/db.config.js");
+const {DB_CONFIG} = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 const { PG_HOST, DB_NAME, PG_USERNAME, PG_PASSWORD } = process.env
 /* 
@@ -23,10 +23,16 @@ const sequelize = new Sequelize( DB_NAME, PG_USERNAME, PG_PASSWORD, {
 });
  */
 
-const sequelize = new Sequelize("energymdb", "postgres", "123", {
-  host: "localhost",
+const sequelize = new Sequelize(DB_CONFIG.database, DB_CONFIG.user, DB_CONFIG.password, {
+  host: DB_CONFIG.host,
   dialect: "postgres",
   operatorsAliases: false,
+  dialectOptions: {
+    ssl: {
+      require: true, // This will help you. But you will see nwe error
+      rejectUnauthorized: false // This line will fix new error
+    }
+  },
   /* pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,
@@ -53,18 +59,17 @@ db.exercise = require("../models/exercise.model.js")(sequelize, Sequelize);
 db.exercise_type = require("../models/exercise-type.model.js")(sequelize, Sequelize);
 
 
-/* db.role.belongsToMany(db.users, {
-  through: "id",
-  foreignKey: "user_id",
-  otherKey: "user_id"
-}); */
+// db.role.belongsToMany(db.users, {
+//   through: "id",
+//   foreignKey: "user_id",
+//   otherKey: "user_id"
+// }); 
 
-//db.role.hasOne(db.users);
+// db.role.hasOne(db.users);
 
 db.users.belongsTo(db.role, {
   through: "id",
   foreignKey: "role_id",
-
 });
 
 /* db.instructor.belongsTo(db.role, {
