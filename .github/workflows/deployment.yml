@@ -56,3 +56,22 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: Deploy in EC2
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+            HOSTNAME : ${{ vars.HOSTNAME  }}
+            USER_NAME : ${{ vars.USER_NAME  }}
+            ACC_ID: ${{vars.DEVOPS_INTEGRATION_USER_ACC_ID}}
+            REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+            
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          
+            #Now we have got the access of EC2 and we will start the deploy .
+            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com'
+            docker pull '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com/energym:${IMAGE_TAG}'
+            docker stop energym-backend
+            docker rm energym-backend
+            docker run -d -p 8080:8181 --name energym-backend -i -t '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com/energym:${IMAGE_TAG}'
