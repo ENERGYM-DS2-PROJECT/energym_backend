@@ -1,0 +1,70 @@
+name: Deployment
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Bump Version
+        default: v1.0.0
+        required: true
+permissions:
+  id-token: write
+  contents: read
+
+defaults: 
+  run:
+    shell: bash
+    working-directory: ./
+
+jobs: 
+  deploy_production:
+    name: 'Deploy to production'
+    runs-on: ubuntu-latest
+    env: 
+      IMAGE_TAG: ${{ format('{0}_{1}', github.event.repository.name, github.sha ) }}
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # - name: Make envfile
+      #   uses: SpicyPizza/create-envfile@v1.3
+      #   with:
+      #     envkey_PORT: ${{ secrets.envkey_PORT }}
+      #     envkey_DB_HOST: ${{ secrets.envkey_DB_HOST }}
+      #     envkey_DB_USER: ${{ secrets.envkey_DB_USER }}
+      #     envkey_DB_PORT: ${{ secrets.envkey_DB_PORT }}
+      #     envkey_DB_PASSWORD: ${{ secrets.envkey_DB_PASSWORD }}
+      #     envkey_DB_NAME: ${{ secrets.envkey_DB_NAME }}
+      #     envkey_AUTH_KEY: ${{ secrets.envkey_AUTH_KEY }}
+      #     envkey_SECRET_KEY: ${{ secrets.envkey_SECRET_KEY }}
+      #     envkey_AWS_ACCESS_KEY_ID: ${{ secrets.envkey_AWS_ACCESS_KEY_ID }}
+      #     envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.envkey_AWS_SECRET_ACCESS_KEY }}
+      #     envkey_AWS_BUCKET_NAME: ${{ secrets.envkey_AWS_BUCKET_NAME }}
+      #     envkey_AWS_BUCKET_REGION: ${{ secrets.envkey_AWS_BUCKET_REGION }}
+      #     envkey_POSTMARK_API_TOKEN: ${{ secrets.envkey_POSTMARK_API_TOKEN }},
+      #     envkey_STRIPE_KEY: ${{ secrets.envkey_STRIPE_KEY  }}
+      #     envkey_AWS_AGREEMENT_FOLDER: ${{ secrets.envkey_AWS_AGREEMENT_FOLDER  }}
+      #     envkey_DLM_INTEGRATION_HOST: ${{ secrets.envkey_DLM_INTEGRATION_HOST  }}
+      #     envkey_CETV_INTEGRATION_HOST: ${{ secrets.envkey_CETV_INTEGRATION_HOST  }}
+      #     envkey_CETV_INTEGRATION_API_KEY: ${{ secrets.envkey_CETV_INTEGRATION_API_KEY  }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::064299454727:role/energym-oidc-role
+          role-session-name: energym_oidc_deployment
+          aws-region: ${{ vars.AWS_REGION }}
+          
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        id: push-image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: energym
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
