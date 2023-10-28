@@ -27,27 +27,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # - name: Make envfile
-      #   uses: SpicyPizza/create-envfile@v1.3
-      #   with:
-      #     envkey_PORT: ${{ secrets.envkey_PORT }}
-      #     envkey_DB_HOST: ${{ secrets.envkey_DB_HOST }}
-      #     envkey_DB_USER: ${{ secrets.envkey_DB_USER }}
-      #     envkey_DB_PORT: ${{ secrets.envkey_DB_PORT }}
-      #     envkey_DB_PASSWORD: ${{ secrets.envkey_DB_PASSWORD }}
-      #     envkey_DB_NAME: ${{ secrets.envkey_DB_NAME }}
-      #     envkey_AUTH_KEY: ${{ secrets.envkey_AUTH_KEY }}
-      #     envkey_SECRET_KEY: ${{ secrets.envkey_SECRET_KEY }}
-      #     envkey_AWS_ACCESS_KEY_ID: ${{ secrets.envkey_AWS_ACCESS_KEY_ID }}
-      #     envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.envkey_AWS_SECRET_ACCESS_KEY }}
-      #     envkey_AWS_BUCKET_NAME: ${{ secrets.envkey_AWS_BUCKET_NAME }}
-      #     envkey_AWS_BUCKET_REGION: ${{ secrets.envkey_AWS_BUCKET_REGION }}
-      #     envkey_POSTMARK_API_TOKEN: ${{ secrets.envkey_POSTMARK_API_TOKEN }},
-      #     envkey_STRIPE_KEY: ${{ secrets.envkey_STRIPE_KEY  }}
-      #     envkey_AWS_AGREEMENT_FOLDER: ${{ secrets.envkey_AWS_AGREEMENT_FOLDER  }}
-      #     envkey_DLM_INTEGRATION_HOST: ${{ secrets.envkey_DLM_INTEGRATION_HOST  }}
-      #     envkey_CETV_INTEGRATION_HOST: ${{ secrets.envkey_CETV_INTEGRATION_HOST  }}
-      #     envkey_CETV_INTEGRATION_API_KEY: ${{ secrets.envkey_CETV_INTEGRATION_API_KEY  }}
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_PORT: ${{ vars.envkey_PORT }}
+          envkey_DB_HOST: ${{ vars.envkey_DB_HOST }}
+          envkey_DB_USERNAME: ${{ vars.envkey_DB_USERNAME }}
+          envkey_DB_PASSWORD: ${{ secrets.envkey_DB_PASSWORD }}
+          envkey_PG_DATABASE: ${{ vars.envkey_PG_DATABASE }}
+          envkey_PG_PORT: ${{ vars.envkey_PG_PORT }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
