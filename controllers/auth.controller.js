@@ -1,16 +1,13 @@
 const db = require("../models");
 const config = require("../config/auth.config");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = db.users;
 const Role = db.role;
 const Op = db.Sequelize.Op;
+const { hash, validateHash } = require("../util/bcrypt");
 
 exports.signUp = async (req, res) => {
   try {
-
-    const salt = await bcrypt.genSalt(10);
-
     const users = {
         first_name: req.body.first_name,
         middle_name: req.body.middle_name,
@@ -20,7 +17,7 @@ exports.signUp = async (req, res) => {
         document_number: req.body.document_number,
         birth_date: req.body.birth_date,
         email: req.body.email,
-        password: await bcrypt.hash(req.body.password, salt),
+        password: await hash(req.body.password),
         has_membership: req.body.has_membership ? req.body.has_membership : false
     };
   
@@ -64,7 +61,7 @@ exports.signUp = async (req, res) => {
        
       }
 
-        const password_valid = await bcrypt.compare(req.body.password,user.password);
+        const password_valid = await validateHash(req.body.password,user.password);
 
         if (!password_valid) {
           res.status(400).json({ error : "Invalid Password" });

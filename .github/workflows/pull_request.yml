@@ -1,0 +1,31 @@
+name: PR validation
+on: 
+  push: 
+    pull-request: 
+      branches: 
+        - main
+        - develop
+
+defaults: 
+  run:
+    shell: bash
+    working-directory: ./
+
+jobs: 
+  pr_validation: 
+    name: 'PR validation'
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14.16.1'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Test code
+        run: npm run test
