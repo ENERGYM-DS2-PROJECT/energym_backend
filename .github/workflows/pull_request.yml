@@ -1,11 +1,12 @@
 name: PR validation
 on: 
-  push: 
-    pull-request: 
-      branches: 
-        - main
-        - develop
-
+  pull_request:
+    branches:
+      - main
+      - develop
+    types:
+      - opened
+      
 defaults: 
   run:
     shell: bash
