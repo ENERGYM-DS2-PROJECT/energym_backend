@@ -76,4 +76,6 @@ jobs:
             docker rm energym-backend
             docker run -d -p 8001:8008 --name energym-backend -i -t '${ACC_ID}.dkr.ecr.us-east-2.amazonaws.com/energym:${IMAGE_TAG}'
             docker image prune -a -f
+            echo "" > /var/logs/energym-backend.log
+            docker logs -f energym-backend &> /var/logs/energym-backend.log &
           '
